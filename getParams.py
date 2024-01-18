@@ -1,100 +1,59 @@
-import os
+import sys
 import requests
-import tarfile
-import xml.etree.ElementTree as ET
-import logging
-from tqdm import tqdm
-
-# URLs of the zip files
-ZIP_FILE_URLS = [
-    "http://qa.sc.couchbase.com/view/Cloud/job/k8s-cbop-aks-pipeline/lastSuccessfulBuild/artifact/validation.tar.gz",
-    "http://qa.sc.couchbase.com/view/Cloud/job/k8s-cbop-aks-pipeline/lastSuccessfulBuild/artifact/sanity.tar.gz",
-    # "http://qa.sc.couchbase.com/view/Cloud/job/k8s-cbop-aks-pipeline/lastSuccessfulBuild/artifact/p0.tar.gz",
-    # "http://qa.sc.couchbase.com/view/Cloud/job/k8s-cbop-aks-pipeline/lastSuccessfulBuild/artifact/p1.tar.gz",
-    # Add more URLs as needed
-]
-
-# Directory to store downloaded and extracted files
-DOWNLOAD_DIR = "downloaded_files"
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from bs4 import BeautifulSoup
 
 
-def download_file(url, target_path):
-    try:
-        response = requests.get(url, stream=True)
-        response.raise_for_status()
-        total_size = int(response.headers.get("content-length", 0))
-        with open(target_path, "wb") as file, tqdm(
-            desc=os.path.basename(target_path),
-            total=total_size,
-            unit="B",
-            unit_scale=True,
-            unit_divisor=1024,
-        ) as bar:
-            for chunk in response.iter_content(chunk_size=128):
-                file.write(chunk)
-                bar.update(len(chunk))
-        return True
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error downloading file from URL '{url}': {e}")
-        return False
+def extract_params_from_webpage(url):
+    # Fetch the HTML content of the webpage
+    response = requests.get(url)
 
+    # Check if the request was successful (status code 200)
+    if response.status_code == 200:
+        # Parse HTML content with BeautifulSoup
+        soup = BeautifulSoup(response.text, "html.parser")
 
-def extract_tar_archive(archive_path, extract_dir):
-    try:
-        with tarfile.open(archive_path, "r:gz") as tar:
-            tar.extractall(extract_dir)
-        return True
-    except tarfile.TarError as e:
-        logger.error(f"Error extracting archive '{archive_path}': {e}")
-        return False
+        # Find all settings and extract key/value pairs
+        settings = soup.find_all("td", {"class": "setting-name"})
 
+        # Initialize a list to store key/value pairs
+        key_value_pairs = []
 
-def parse_xml(xml_file_path):
-    try:
-        tree = ET.parse(xml_file_path)
-        root = tree.getroot()
+        for setting in settings:
+            key = setting.text.strip()
 
-        # Extract 'testcase name' and check for 'failure message'
-        for testcase in root.findall(".//testcase"):
-            testcase_name = testcase.get("name")
-            failure = testcase.find("failure")
+            # Find the next "value" after "setting-main"
+            value_element = setting.find_next("td", {"class": "setting-main"}).find(
+                "input", {"name": "value"}
+            )
 
-            if testcase_name and failure is not None:
-                # If 'failure' element exists, add 'testcase name' to the set
-                unique_testcases_with_failures.add(testcase_name)
+            # Check if the value is a checkbox
+            if value_element and value_element.get("type") == "checkbox":
+                value = "checked" if value_element.get("checked") else "unchecked"
+            else:
+                value = value_element.get("value", "")
 
-        logger.info(
-            f"Testcase names with failures extracted from XML file '{xml_file_path}'"
-        )
-    except ET.ParseError as e:
-        logger.error(f"Error parsing XML file '{xml_file_path}': {e}")
+            key_value_pairs.append((key, value))
+
+        # Display the key/value pairs
+        for key, value in key_value_pairs:
+            print(f"{key}: {value}")
+    else:
+        print(f"Failed to fetch the webpage. Status Code: {response.status_code}")
 
 
 if __name__ == "__main__":
-    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+    # Check if the correct number of command-line arguments is provided
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <job_input>")
+        sys.exit(1)
 
-    # Set to store unique 'testcase names' with a 'failure message'
-    unique_testcases_with_failures = set()
+    # Extract the job input from the command-line arguments
+    job_input = sys.argv[1]
 
-    for zip_file_url in ZIP_FILE_URLS:
-        zip_file_path = os.path.join(DOWNLOAD_DIR, os.path.basename(zip_file_url))
+    # Construct the URL
+    url_to_extract = (
+        f"http://qa.sc.couchbase.com/view/Cloud/job/{job_input}/parameters/"
+    )
 
-        if download_file(zip_file_url, zip_file_path) and extract_tar_archive(
-            zip_file_path, DOWNLOAD_DIR
-        ):
-            # Iterate through XML files in the extracted directory
-            for xml_file_name in os.listdir(DOWNLOAD_DIR):
-                if xml_file_name.endswith(".xml"):
-                    xml_file_path = os.path.join(DOWNLOAD_DIR, xml_file_name)
-                    parse_xml(xml_file_path)
-
-    # Convert the set to a list for final output
-    testcases_with_failures_list = list(unique_testcases_with_failures)
-
-    # Print the final list containing unique 'testcase names' with 'failure messages'
-    logger.info("Unique Testcase names with failures:")
-    logger.info(testcases_with_failures_list)
+    # Call the function to extract and display parameters
+    extract_params_from_webpage(url_to_extract)
