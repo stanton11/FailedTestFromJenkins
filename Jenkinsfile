@@ -21,20 +21,11 @@ pipeline {
                     env.JOB_NAME = params.jobName
                     env.BUILD_NUMBER = params.buildNumber
 
-                    def paramsResult = sh(
+                    env.paramsResult = sh(
                         script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
-                        returnStatus: true
+                        returnStdout: true
                     )
-
-                    if (paramsResult == 0) {
-                        env.PARAMS = sh(
-                            script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
-                            returnStdout: true
-                        ).trim()
-                        sh "echo ${env.PARAMS}"
-                    } else {
-                        error 'Failed to execute the script'
-                    }
+                    print(env.paramsResult)
                 }
             }
         }
