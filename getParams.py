@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
     # Construct the URL
     url_to_extract = (
-        f"http://qa.sc.couchbase.com/view/Cloud/job/{job_input}/{build_num}/parameters/"
+        f"http://172.23.109.231/view/Cloud/job/{job_input}/{build_num}/parameters/"
     )
 
     # Call the function to extract and display parameters
