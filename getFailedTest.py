@@ -53,6 +53,9 @@ def parse_arguments():
     parser.add_argument(
         "url4", type=str_to_bool, help="Enable or disable the fourth URL"
     )
+    parser.add_argument(
+        "url5", type=str_to_bool, help="Enable or disable the fourth URL"
+    )
     return parser.parse_args()
 
 
@@ -72,6 +75,9 @@ def generate_zip_file_urls(args):
         if args.url3
         else None,
         url_template.format(pipeline=args.pipeline_name, file="p1.tar.gz")
+        if args.url4
+        else None,
+        url_template.format(pipeline=args.pipeline_name, file="custom.tar.gz")
         if args.url4
         else None,
     ]

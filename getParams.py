@@ -16,7 +16,7 @@ def extract_params_from_webpage(url):
         settings = soup.find_all("td", {"class": "setting-name"})
 
         # Initialize a list to store key/value pairs
-        key_value_pairs = []
+        key_value_pairs = {}
 
         for setting in settings:
             key = setting.text.strip()
@@ -28,17 +28,46 @@ def extract_params_from_webpage(url):
 
             # Check if the value is a checkbox
             if value_element and value_element.get("type") == "checkbox":
-                value = "checked" if value_element.get("checked") else "unchecked"
+                value = "true" if value_element.get("checked") else "false"
             else:
                 value = value_element.get("value", "")
 
-            key_value_pairs.append((key, value))
-
-        # Display the key/value pairs
-        for key, value in key_value_pairs:
-            print(f"{key}: {value}")
+            key_value_pairs[key] = value
     else:
         print(f"Failed to fetch the webpage. Status Code: {response.status_code}")
+
+    key_value_pairs.popitem()
+    key_value_pairs.popitem()
+
+    return key_value_pairs
+
+
+def format_output(params):
+    output_string = []
+
+    # Display the key/value pairs
+    for key in params:
+        if key == "lpv" or key == "enable_istio" or key == "platformcert":
+            output_string.append(
+                f"parameters [booleanParam(name: '{key}', value: '{params[key]}'),"
+            )
+        elif key == "validation" or key == "sanity" or key == "p0" or key == "p1":
+            output_string.append(
+                f"parameters [booleanParam(name: '{key}', value: 'false'),"
+            )
+        else:
+            output_string.append(
+                f"parameters [string(name: '{key}', value: '{params[key]}'),"
+            )
+
+    # Join the list of strings into a single string
+    result_string = "".join(output_string)
+
+    print(result_string)
+    print(params["validation"])
+    print(params["sanity"])
+    print(params["p0"])
+    print(params["p1"])
 
 
 if __name__ == "__main__":
@@ -56,4 +85,7 @@ if __name__ == "__main__":
     )
 
     # Call the function to extract and display parameters
-    extract_params_from_webpage(url_to_extract)
+    pairs = extract_params_from_webpage(url_to_extract)
+
+    # Call the function to format the params ready for the build job
+    format_output(pairs)
