@@ -43,22 +43,18 @@ def extract_params_from_webpage(url):
 
 
 def format_output(params):
-    output_string = []
+    output_string = ["parameters: ["]
 
     # Display the key/value pairs
     for key in params:
         if key == "lpv" or key == "enable_istio" or key == "platformcert":
             output_string.append(
-                f"parameters [booleanParam(name: '{key}', value: '{params[key]}'),"
+                f"[booleanParam(name: '{key}', value: '{params[key]}'),"
             )
         elif key == "validation" or key == "sanity" or key == "p0" or key == "p1":
-            output_string.append(
-                f"parameters [booleanParam(name: '{key}', value: 'false'),"
-            )
+            output_string.append(f"[booleanParam(name: '{key}', value: 'false'),")
         else:
-            output_string.append(
-                f"parameters [string(name: '{key}', value: '{params[key]}'),"
-            )
+            output_string.append(f"[string(name: '{key}', value: '{params[key]}'),")
 
     # Join the list of strings into a single string
     result_string = "".join(output_string)

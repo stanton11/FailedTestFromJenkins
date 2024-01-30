@@ -18,9 +18,23 @@ pipeline {
         stage('Run getParams.py') {
             steps {
                 script {
-                    def paramsResult = sh(script: "python getParams.py ${params.jobName}/${params.buildNumber}", returnStdout: true).trim()
-                    env.PARAMS = paramsResult
-                    sh "echo ${env.PARAMS}"
+                    env.JOB_NAME = params.jobName
+                    env.BUILD_NUMBER = params.buildNumber
+
+                    def paramsResult = sh(
+                        script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
+                        returnStatus: true
+                    )
+
+                    if (paramsResult == 0) {
+                        env.PARAMS = sh(
+                            script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
+                            returnStdout: true
+                        ).trim()
+                        sh "echo ${env.PARAMS}"
+                    } else {
+                        error 'Failed to execute the script'
+                    }
                 }
             }
         }
@@ -28,7 +42,7 @@ pipeline {
         stage('Run getFailedTests.py') {
             steps {
                 script {
-                    def customTestsResult = sh(script: "python getFailedTests.py ${params.jobName}/${params.buildNumber} ${params.validation} ${params.sanity} ${params.p0} v${params.p1}", returnStdout: true).trim()
+                    def customTestsResult = sh(script: "python3 getFailedTests.py ${params.jobName}/${params.buildNumber} ${params.validation} ${params.sanity} ${params.p0} v${params.p1}", returnStdout: true).trim()
                     env.CUSTOM_TESTS = customTestsResult
                     sh "echo ${env.CUSTOM_TESTS}"
                 }
