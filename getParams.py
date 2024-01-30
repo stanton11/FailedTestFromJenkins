@@ -36,9 +36,6 @@ def extract_params_from_webpage(url):
     else:
         print(f"Failed to fetch the webpage. Status Code: {response.status_code}")
 
-    key_value_pairs.popitem()
-    key_value_pairs.popitem()
-
     return key_value_pairs
 
 
@@ -53,6 +50,8 @@ def format_output(params):
             )
         elif key == "validation" or key == "sanity" or key == "p0" or key == "p1":
             output_string.append(f"booleanParam(name: '{key}', value: 'false'),")
+        elif key == "custom" or key == "custom_args":
+            continue
         else:
             output_string.append(f"string(name: '{key}', value: '{params[key]}'),")
 
@@ -64,6 +63,7 @@ def format_output(params):
     print(params["sanity"])
     print(params["p0"])
     print(params["p1"])
+    print(params["custom"])
 
 
 if __name__ == "__main__":

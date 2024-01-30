@@ -25,15 +25,21 @@ pipeline {
                         script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
                         returnStdout: true
                     )
-                    print(env.paramsResult)
+                    splitRes = env.paramsResult.split('\n')
+                    env.params = splitRes[0]
+                    env.val = splitRes[1]
+                    env.san = splitRes[2]
+                    env.p0 = splitRes[3]
+                    env.p1 = splitRes[4]
+                    env.custom = splitRes[5]
                 }
             }
         }
 
-        stage('Run getFailedTests.py') {
+        stage('Run getFailedTest.py') {
             steps {
                 script {
-                    def customTestsResult = sh(script: "python3 getFailedTests.py ${params.jobName}/${params.buildNumber} ${params.validation} ${params.sanity} ${params.p0} v${params.p1}", returnStdout: true).trim()
+                    def customTestsResult = sh(script: "python3 getFailedTest.py ${params.jobName}/${params.buildNumber} ${env.val} ${env.san} ${env.p0} ${env.p1} ${env.custom}", returnStdout: true).trim()
                     env.CUSTOM_TESTS = customTestsResult
                     sh "echo ${env.CUSTOM_TESTS}"
                 }
