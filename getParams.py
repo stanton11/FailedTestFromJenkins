@@ -7,6 +7,9 @@ def extract_params_from_webpage(url):
     # Fetch the HTML content of the webpage
     response = requests.get(url)
 
+    # Initialize a list to store key/value pairs
+    key_value_pairs = {}
+
     # Check if the request was successful (status code 200)
     if response.status_code == 200:
         # Parse HTML content with BeautifulSoup
@@ -14,9 +17,6 @@ def extract_params_from_webpage(url):
 
         # Find all settings and extract key/value pairs
         settings = soup.find_all("td", {"class": "setting-name"})
-
-        # Initialize a list to store key/value pairs
-        key_value_pairs = {}
 
         for setting in settings:
             key = setting.text.strip()
