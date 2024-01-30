@@ -72,16 +72,17 @@ def format_output(params):
 
 if __name__ == "__main__":
     # Check if the correct number of command-line arguments is provided
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <job_input>")
+    if len(sys.argv) != 3:
+        print("Usage: python script.py <job_name> <build_num>")
         sys.exit(1)
 
     # Extract the job input from the command-line arguments
     job_input = sys.argv[1]
+    build_num = sys.argv[2]
 
     # Construct the URL
     url_to_extract = (
-        f"http://qa.sc.couchbase.com/view/Cloud/job/{job_input}/parameters/"
+        f"http://qa.sc.couchbase.com/view/Cloud/job/{job_input}/{build_num}/parameters/"
     )
 
     # Call the function to extract and display parameters
