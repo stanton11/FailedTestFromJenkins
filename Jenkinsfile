@@ -43,8 +43,8 @@ pipeline {
                         script: 'python3 getFailedTestLW.py "$JOB_NAME"/"$BUILD_NUMBER" "$val" "$san" "$p0" "$p1" "$custom"',
                         returnStdout: true
                     ).trim()
-                    env.splitOut = env.customTestsResult.split('\n')
-                    env.customTestsResult = env.splitOut.last()
+                    print('failed res: ' + env.customTestsResult)
+                    env.customTestsResult = env.customTestsResult.split('\n').last()
                     echo "Custom Tests Result: ${env.customTestsResult}"
                 }
             }
