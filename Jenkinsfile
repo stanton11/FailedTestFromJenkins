@@ -26,7 +26,6 @@ pipeline {
                         returnStdout: true
                     )
                     splitRes = env.paramsResult.split('\n')
-                    env.params = splitRes[0]
                     env.val = splitRes[1]
                     env.san = splitRes[2]
                     env.p0 = splitRes[3]
@@ -52,7 +51,8 @@ pipeline {
             steps {
                 script {
                     env.params += env.customTestsResult
-                    build job: params.jobName, parameters: env.params, propagate: false, wait: false, quietPeriod: 3
+                    env.params_list = env.params.split(',')
+                    build job: params.jobName, parameters: env.params_list, propagate: false, wait: false, quietPeriod: 3
                 }
             }
         }
