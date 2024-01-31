@@ -57,7 +57,15 @@ pipeline {
 
                     print('paramsObject: ' + env.new_params)
 
-                    build job: '$env.JOB_NAME', parameters: env.new_params
+                    env.jName = "'" + env.JOB_NAME + "'"
+
+                    paramsObject = []
+
+                    for (param in env.new_params.split('|')) {
+                        paramsObject.add(param)
+                    }
+
+                    build job:env.jName, parameters: paramsObject
                 }
             }
         }
