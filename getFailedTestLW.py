@@ -159,7 +159,7 @@ def main():
     # print("Unique Testcase names with failures:")
 
     print(
-        f"booleanParam(name: 'custom', value: true), string(name: 'custom_args', value: '{output_string}')"
+        f"[BooleanParameterValue, name: 'custom', value: true], [StringParameterValue, name: 'custom_args', value: '{output_string}']"
     )
 
     # Remove downloaded files
