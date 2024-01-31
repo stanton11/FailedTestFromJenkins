@@ -57,7 +57,7 @@ pipeline {
 
                     print('paramsObject: ' + env.new_params)
 
-                    build job: env.JOB_NAME, parameters: env.new_params, propagate: false, wait: false, quietPeriod: 3
+                    build job: env.JOB_NAME, parameters: env.new_params
                 }
             }
         }
