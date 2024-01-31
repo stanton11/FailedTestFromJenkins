@@ -39,7 +39,7 @@ pipeline {
         stage('Run getFailedTest.py') {
             steps {
                 script {
-                    def customTestsResult = sh(script: "python3 getFailedTest.py ${params.jobName}/${params.buildNumber} ${env.val} ${env.san} ${env.p0} ${env.p1} ${env.custom}", returnStdout: true).trim()
+                    def customTestsResult = sh(script: "python3 getFailedTestLW.py ${params.jobName}/${params.buildNumber} ${env.val} ${env.san} ${env.p0} ${env.p1} ${env.custom}", returnStdout: true).trim()
                     env.CUSTOM_TESTS = customTestsResult
                     sh "echo ${env.CUSTOM_TESTS}"
                 }
