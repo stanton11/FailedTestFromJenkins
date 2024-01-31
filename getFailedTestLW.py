@@ -12,6 +12,14 @@ def str_to_bool(s):
     return s.lower() == "true"
 
 
+def install_prerequisites():
+    try:
+        subprocess.run(["pip", "install", "requests", "html5lib"])
+    except Exception as e:
+        print(f"Error installing prerequisites: {e}")
+        exit(1)
+
+
 download_dir = "downloaded_files"
 
 
@@ -134,7 +142,7 @@ def remove_downloaded_files():
 
 
 def main():
-    ## install_prerequisites()
+    install_prerequisites()
     args = parse_arguments()
     global zip_file_urls
     zip_file_urls = generate_zip_file_urls(args)
