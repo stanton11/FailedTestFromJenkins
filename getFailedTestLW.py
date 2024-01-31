@@ -162,8 +162,10 @@ def main():
             unique_testcases_with_failures.update(process_xml_files(extracted_dir))
 
     output_string = set_to_string(unique_testcases_with_failures)
-    print("Unique Testcase names with failures:")
-    output = f"booleanParam(name: 'custom', value: true), string(name: '{output_string}')]"
+    # print("Unique Testcase names with failures:")
+    output = (
+        f"booleanParam(name: 'custom', value: true), string(name: '{output_string}')]"
+    )
 
     print(output)
 
