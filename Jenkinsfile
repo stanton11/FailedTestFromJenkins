@@ -25,7 +25,7 @@ pipeline {
                         script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
                         returnStdout: true
                     ).trim()
-                    splitRes = paramsResult.tokenize('\n')
+                    splitRes = env.paramsResult.tokenize('\n')
                     env.new_params = splitRes[0]
                     env.val = splitRes[1]
                     env.san = splitRes[2]
@@ -43,7 +43,6 @@ pipeline {
                         script: 'python3 getFailedTestLW.py "$JOB_NAME"/"$BUILD_NUMBER" "$val" "$san" "$p0" "$p1" "$custom"',
                         returnStdout: true
                     ).trim()
-                    print('failed res: ' + env.customTestsResult)
                     env.customTestsResult = env.customTestsResult.split('\n').last()
                     echo "Custom Tests Result: ${env.customTestsResult}"
                 }
@@ -55,33 +54,10 @@ pipeline {
                 script {
                     // Build Param Set
                     env.new_params += env.customTestsResult
-                    env.param_list = env.new_params.tokenize(',')
 
-                    // Initialize an empty list to store parameters
-                    env.paramsObjects = []
+                    print('paramsObject: ' + env.new_params)
 
-                    // Define the processElement function
-                    def processElement = { element ->
-                        // Extract class, name, and value from the element
-                        paramClass = element[0]
-                        paramName = element.name
-                        paramValue = element.value
-
-                        // Determine the class based on the value
-                        paramType = paramValue instanceof Boolean ? 'BooleanParameterValue' : 'StringParameterValue'
-
-                        // Build the parameter object and push it to the list
-                        env.paramsObjects.add([$class: paramType, name: paramName, value: paramValue])
-                    }
-
-                    // Loop through each element in the input list
-                    env.param_list.each {
-                        processElement(it)
-                    }
-
-                    print(env.paramsObjects)
-
-                    build job: env.JOB_NAME, parameters: env.paramsObjects, propagate: false, wait: false, quietPeriod: 3
+                    build job: env.JOB_NAME, parameters: env.new_params, propagate: false, wait: false, quietPeriod: 3
                 }
             }
         }
