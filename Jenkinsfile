@@ -25,16 +25,13 @@ pipeline {
                         script: 'python3 getParams.py "$JOB_NAME" "$BUILD_NUMBER"',
                         returnStdout: true
                     ).trim()
-
-                    env.splitRes = env.paramsResult.split('\n')
-                    env.new_params = env.splitRes[0]
-                    env.val = env.splitRes[1]
-                    env.san = env.splitRes[2]
-                    env.p0 = env.splitRes[3]
-                    env.p1 = env.splitRes[4]
-                    env.custom = env.splitRes[5]
-
-                    print('vars: ' + env.new_params + ' ' + env.val + ' ' + env.san + ' ' + env.p0 + ' ' + env.p1 + ' ' + env.custom)
+                    splitRes = paramsResult.tokenize('\n')
+                    env.new_params = splitRes[0]
+                    env.val = splitRes[1]
+                    env.san = splitRes[2]
+                    env.p0 = splitRes[3]
+                    env.p1 = splitRes[4]
+                    env.custom = splitRes[5]
                 }
             }
         }
