@@ -42,8 +42,8 @@ pipeline {
                     env.customTestsResult = sh(
                         script: 'python3 getFailedTestLW.py "$JOB_NAME"/"$BUILD_NUMBER" "$val" "$san" "$p0" "$p1" "$custom"',
                         returnStdout: true
-                    )
-                    sh "echo ${env.customTestsResult}"
+                    ).trim()
+                    echo "Custom Tests Result: ${env.customTestsResult}"
                 }
             }
         }
@@ -51,7 +51,8 @@ pipeline {
         stage('Build Job') {
             steps {
                 script {
-                    build job: params.jobName, parameters: env.PARAMS, propagate: false, wait: false, quietPeriod: 3
+                    env.params += env.customTestsResult
+                    build job: params.jobName, parameters: env.params, propagate: false, wait: false, quietPeriod: 3
                 }
             }
         }

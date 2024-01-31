@@ -40,7 +40,7 @@ def extract_params_from_webpage(url):
 
 
 def format_output(params):
-    output_string = ["parameters: ["]
+    output_string = ["["]
 
     # Display the key/value pairs
     for key in params:
