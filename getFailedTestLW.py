@@ -15,14 +15,6 @@ def str_to_bool(s):
 download_dir = "downloaded_files"
 
 
-def install_prerequisites():
-    try:
-        subprocess.run(["pip", "install", "requests", "html5lib"])
-    except Exception as e:
-        print(f"Error installing prerequisites: {e}")
-        exit(1)
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser(
         description="Process URLs with a given pipeline name"
@@ -78,8 +70,6 @@ def download_and_extract(zip_file_url):
         ) as file:
             file.write(response.content)
 
-        print(f"\nDownloaded the zip file to: {zip_file_path}")
-
         extracted_dir = os.path.join(
             download_dir, os.path.splitext(os.path.basename(zip_file_path))[0]
         )
@@ -87,7 +77,6 @@ def download_and_extract(zip_file_url):
 
         shutil.unpack_archive(zip_file_path, extracted_dir)
 
-        print(f"Extracted files to: {extracted_dir}")
         return os.path.abspath(extracted_dir)
 
     except requests.exceptions.RequestException as e:
@@ -110,7 +99,6 @@ def process_xml_files(extracted_dir):
 
                 if testcase_name and failure is not None:
                     unique_testcases_with_failures.add(testcase_name)
-                    print(f"Found failed testcase: {testcase_name}")
 
         except ET.ParseError as e:
             print(f"Error parsing XML file '{xml_file_path}': {e}")
@@ -141,14 +129,12 @@ def remove_downloaded_files():
                 os.remove(zip_file_path)
                 shutil.rmtree(extracted_dir)
 
-                print(f"Removed files related to: {zip_file_url}")
-
     except Exception as e:
         print(f"Error removing downloaded files: {e}")
 
 
 def main():
-    install_prerequisites()
+    ## install_prerequisites()
     args = parse_arguments()
     global zip_file_urls
     zip_file_urls = generate_zip_file_urls(args)

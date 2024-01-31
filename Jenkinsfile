@@ -26,6 +26,7 @@ pipeline {
                         returnStdout: true
                     )
                     splitRes = env.paramsResult.split('\n')
+                    env.new_params = splitRes[0]
                     env.val = splitRes[1]
                     env.san = splitRes[2]
                     env.p0 = splitRes[3]
@@ -50,9 +51,11 @@ pipeline {
         stage('Build Job') {
             steps {
                 script {
-                    env.params += env.customTestsResult
-                    env.params_list = env.params.split(',')
-                    build job: params.jobName, parameters: env.params_list, propagate: false, wait: false, quietPeriod: 3
+                    env.new_params += env.customTestsResult
+                    print(env.new_params)
+                    //env.param_list[] = env.new_params.split(',')
+                    //print(env.param_list)
+                    // build job: params.jobName, parameters: env.param_list, propagate: false, wait: false, quietPeriod: 3
                 }
             }
         }
