@@ -43,6 +43,8 @@ pipeline {
                         script: 'python3 getFailedTestLW.py "$JOB_NAME"/"$BUILD_NUMBER" "$val" "$san" "$p0" "$p1" "$custom"',
                         returnStdout: true
                     ).trim()
+                    splitOut = env.customTestsResult.split('\n')
+                    env.customTestsResult = splitOut.last()
                     echo "Custom Tests Result: ${env.customTestsResult}"
                 }
             }
@@ -52,10 +54,8 @@ pipeline {
             steps {
                 script {
                     env.new_params += env.customTestsResult
-                    print(env.new_params)
-                    //env.param_list[] = env.new_params.split(',')
-                    //print(env.param_list)
-                    // build job: params.jobName, parameters: env.param_list, propagate: false, wait: false, quietPeriod: 3
+                    env.param_list = env.new_params.tokenize(',')
+                    build job: params.jobName, parameters: env.param_list, propagate: false, wait: false, quietPeriod: 3
                 }
             }
         }
