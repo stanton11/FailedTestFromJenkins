@@ -59,9 +59,11 @@ pipeline {
 
                     env.jName = "'" + env.JOB_NAME + "'"
 
+                    param_list = env.new_params.tokenize('|')
+                    print('param list 0: ' + param_list[0])
                     paramsObject = []
 
-                    for (param in env.new_params.split('|')) {
+                    for (param in param_list) {
                         paramsObject.add(param)
                     }
 
