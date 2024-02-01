@@ -40,14 +40,14 @@ def extract_params_from_webpage(url):
 
 
 def format_output(params):
-    output_string = [""]
+    output_string = []
 
     # Display the key/value pairs
     for key in params:
         if key == "custom" or key == "custom_args":
             continue
         else:
-            output_string.append(f"{params[key]}")
+            output_string.append(params[key])
 
     print(output_string)
     print(params["validation"])
