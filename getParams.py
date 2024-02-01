@@ -44,16 +44,7 @@ def format_output(params):
 
     # Display the key/value pairs
     for key in params:
-        if key == "lpv" or key == "enable_istio" or key == "platformcert":
-            output_string.append(
-                f"booleanParam(name: '{key}', value: '{params[key]}')|"
-            )
-        elif key == "validation" or key == "sanity" or key == "p0" or key == "p1":
-            output_string.append(f"booleanParam(name: '{key}', value: 'false')|")
-        elif key == "custom" or key == "custom_args":
-            continue
-        else:
-            output_string.append(f"string(name: '{key}', value: '{params[key]}')|")
+        output_string.append(f"{key}:{params[key]}\n")
 
     # Join the list of strings into a single string
     result_string = "".join(output_string)
