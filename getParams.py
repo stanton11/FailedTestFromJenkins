@@ -47,7 +47,7 @@ def format_output(params):
         if key == "custom" or key == "custom_args":
             continue
         else:
-            output_string.append(f"{key}:{params[key]}")
+            output_string.append(f"{params[key]}")
 
     print(output_string)
     print(params["validation"])
