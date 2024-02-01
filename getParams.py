@@ -46,10 +46,7 @@ def format_output(params):
     for key in params:
         output_string.append(f"{key}:{params[key]}\n")
 
-    # Join the list of strings into a single string
-    result_string = "".join(output_string)
-
-    print(result_string)
+    print(output_string)
     print(params["validation"])
     print(params["sanity"])
     print(params["p0"])
