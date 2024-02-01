@@ -44,7 +44,10 @@ def format_output(params):
 
     # Display the key/value pairs
     for key in params:
-        output_string.append(f"{key}:{params[key]}\n")
+        if key == "custom" or key == "custom_args":
+            continue
+        else:
+            output_string.append(f"{key}:{params[key]}")
 
     print(output_string)
     print(params["validation"])

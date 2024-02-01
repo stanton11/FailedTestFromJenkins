@@ -158,9 +158,7 @@ def main():
     output_string = set_to_string(unique_testcases_with_failures)
     # print("Unique Testcase names with failures:")
 
-    print(
-        f"booleanParam(name: 'custom', value: true)|string(name: 'custom_args', value: '{output_string}')"
-    )
+    print(f"custom:true, custom_args:{output_string}")
 
     # Remove downloaded files
     remove_downloaded_files()
